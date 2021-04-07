@@ -1,41 +1,58 @@
 from scipy.stats import norm
 from csv import writer
+import random as rnd
+import numpy as np
 
 
-def generate_points_y(number_p:int=2000,location_y:int=0,scale_y:int=200,przesuniecie:int=0):
-    x_points_d = norm(loc=0, scale=20)
-    y_points_d = norm(loc=location_y, scale=scale_y)
-    z_points_d = norm(loc=0.2, scale=0.05)
-
-    x = x_points_d.rvs(size=number_p)
-    y = y_points_d.rvs(size=number_p)
-    z = z_points_d.rvs(size=number_p)
-
-    points = zip(x+przesuniecie,y+przesuniecie,z+przesuniecie)
+def generate_points(num_points, locx, scalex, locy, scaley, locz, scalez, shift):
+    distribution_x = norm(locx, scalex)
+    distribution_y = norm(locy, scaley)
+    distribution_z = norm(locz, scalez)
+    x = distribution_x.rvs(size=num_points)
+    y = distribution_y.rvs(size=num_points)
+    z = distribution_z.rvs(size=num_points)
+    points = zip(x+shift, y+shift, z+shift)
     return points
 
-def generate_points_x(number_p:int=2000,location_x:int=0,scale_x:int=200,przesuniecie_x:int=0):
-    x_points_d = norm(loc=location_x, scale=scale_x)
-    y_points_d = norm(loc=0, scale=20)
-    z_points_d = norm(loc=0.2, scale=0.05)
 
-    x = x_points_d.rvs(size=number_p)
-    y = y_points_d.rvs(size=number_p)
-    z = z_points_d.rvs(size=number_p)
+def generate_cylinder(number_points:int=10000,r=100,h=300,shift=0):
+    xx=[]
+    yy=[]
+    zz=[]
+    while(len(xx) < number_points):
+        x = rnd.uniform(-1,1)*r
+        y = rnd.uniform(-1,1)*np.sqrt(r**2-x**2)
+        z = rnd.uniform(-1,1)*h
+        xx.append(x+shift)
+        yy.append(y+shift)
+        zz.append(z+shift)
+    return zip(xx,yy,zz)
 
-    points = zip(x+przesuniecie_x,y+przesuniecie_x,z+przesuniecie_x)
-    return points
+#def generate_tube(r,n=2000,h=100,cx=0,cy=0,cz=0):
 
-if(__name__ == '__main__'):
-    cloud_points_y = generate_points_y(1500,0,200,750)
-    cloud_points_x = generate_points_x(1500,0,200,-750)
-    cloud_points_y2 = generate_points_y(1500, 0, 200, -150)
+#    dx = uniform.(cx-r,cx+2*r)
+#    dy = uniform(cy-r,cy+2*r)
+#    dz = uniform(cz, cz+h)
 
-    with open('cloud_points.xyz', 'w', encoding='utf-8', newline='\n') as csvfile:
-        csvwriter = writer(csvfile)
-        for p in cloud_points_y:
-            csvwriter.writerow(p)
-        for py2 in cloud_points_y2:
-            csvwriter.writerow(py2)
-        for p_x in cloud_points_x:
-            csvwriter.writerow(p_x)
+#    n_corrected = int(np.ceil(n*4/np.pi))
+#    px = dx.rvs(size=n_corrected)
+#    py = dy.rvs(size=n_corrected)
+ #   pz = dz.rvs(size=n_corrected)
+
+  #  points = list(zip(px,py,pz))
+ #   def filter_distances(point):
+ #       section = (point[0]-cs)
+
+
+if __name__=='__main__':
+    cloud1_points=generate_points(1000,0,100,0,100,0,1,750)
+    cloud2_points=generate_points(1000,0,1,0,100,0,100,-750)
+    cylinder_points=generate_cylinder(1000)
+    with open('cloud_points.xyz','w',encoding='utf-8',newline='\n') as csvfile:
+        csvwriter=writer(csvfile)
+        for p1 in cloud1_points:
+            csvwriter.writerow(p1)
+        for p2 in cloud2_points:
+            csvwriter.writerow(p2)
+        for p3 in cylinder_points:
+            csvwriter.writerow(p3)
