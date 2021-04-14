@@ -49,6 +49,7 @@ if __name__=='__main__':
     cloud2_points=generate_points(1000,0,1,0,100,0,100,-750)
     cylinder_points=generate_cylinder(1000)
     with open('cloud_points.xyz','w',encoding='utf-8',newline='\n') as csvfile:
+
         csvwriter=writer(csvfile)
         for p1 in cloud1_points:
             csvwriter.writerow(p1)
